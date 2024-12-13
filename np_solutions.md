@@ -56,7 +56,7 @@ Como, en otras palabras, lo que hacen los subconjuntos $T_{i,T}$ y $T_{i,F}$ es 
 
 Por otro lado si $S$ es un cubrimiento exacto de $\tau(F)$ definimos una asignación que satisface $F$ de la siguiente forma.
 
-Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo contrario si $T_{i,F}$ esté en $S'$ establecemos $v(x_i) = F$
+Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo contrario si $T_{i,F}$ esté en $S'$ establecemos $v(x_i) = F$.
 
 
 
@@ -67,6 +67,37 @@ Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo cont
 >Un clique es un subgrafo completo dentro de un grafo. Formalmente, un clique en un grafo $G=(V,E)$ es un subconjunto de vértices $C \subseteq V$, tal que todos los pares de vértices en $C$ están conectados directamente por una arista. En otras palabras, todos los vértices del clique están mutuamente conectados.
 >
 >Hallar el clique de mayor tamaño en un grafo.
+
+El problema de hallar el clique de mayor tamaño de un grafo, al no ser un problema de decisión, no clasifica como un problema NP. Por eso reformularemos el problema al problema de decisión de determinar si existe un clique de tamaño al menos $K$.
+
+Dado un grafo $G$ y un clique candidato $C$ podemos determinar si todos los vértices están conectados por una arista en tiempo polinomial ($O(n²)$) con respecto al tamaño de la entrada.
+
+Para demostrar que **Clique** es NP-Completo vamos a reducir **Conjunto independiente** a este.
+
+> Conjunto independiente $\leq_p$ Clique
+
+El *complemento* $G^{C} = (V, E^{C})$ de un grafo $G=(V,E)$ es el grafo con el mismo cojunto de vértices $V$ de $G$ pero  la arista $\set{u,v} \in E^{C}$ (con $u \neq v$) ssi $\set{u,v} \notin E$.
+
+Vamos a demostrar que $G$ tiene un clique de tamaño $K$ ssi $G^{C}$ tiene un conjunto independiente de tamaño $K$.
+
+Por definición, $e$ es una arista de $G$  ssi no es una arista de $G^{C}$. Si tenemos un clique de tamaño $K$ en $G$ , tenemos $K$ vértices con todas las aristas posibles entre todos ellos. Por tanto, ninguna de estas aristas estaría presente en $G^{C}$, de esta forma estos $K$ vértices representan un conjunto independiente en $G^{C}$. De forma similar si tenemos un conjunto independiente en $G^{C}$ obtenemos el clique correspondiente en $G$.
+
+De esta forma construimos la instancia $\tau(G) = G^{C}$ de **Clique** tal que $G$ tiene un conjunto independiente de tamaño al menos $K$ ssi  $G^{C}$ tiene un clique de tamaño al menos $K$.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
