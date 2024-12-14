@@ -68,23 +68,40 @@ Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo cont
 >
 >Hallar el clique de mayor tamaño en un grafo.
 
-El problema de hallar el clique de mayor tamaño de un grafo, al no ser un problema de decisión, no clasifica como un problema NP. Por eso reformularemos el problema al problema de decisión de determinar si existe un clique de tamaño al menos $K$.
+Vamos a demostrar que Clique (maximal) es un problema NP-Hard. Para esto vamos a coger el problema SAT que sabemos que es NP-Completo y reducirlo a  Clique (maximal).
 
-Dado un grafo $G$ y un clique candidato $C$ podemos determinar si todos los vértices están conectados por una arista en tiempo polinomial ($O(n²)$) con respecto al tamaño de la entrada.
+> SAT $\leq_p$ Clique (maximal)
 
-Para demostrar que **Clique** es NP-Completo vamos a reducir **Conjunto independiente** a este.
+Dado un conjunto $F=\set{C_1,\dots,C_l}$ de $l$ cláusulas construidas a partir de $n$ variables booleanas tenemos que contruir una instancia $\tau(F)=(G)$ de **Clique (maximal)** tal que podemos determinar si $F$ es satisfacible ssi podemos hallar el clique maximal de $\tau(F)$.
 
-> Conjunto independiente $\leq_p$ Clique
+El método para construir $G=(V,E)$ es de la siguiente forma. Sea:
 
-El *complemento* $G^{C} = (V, E^{C})$ de un grafo $G=(V,E)$ es el grafo con el mismo cojunto de vértices $V$ de $G$ pero  la arista $\set{u,v} \in E^{C}$ (con $u \neq v$) ssi $\set{u,v} \notin E$.
+$$
+C_j=(L_{j1} \lor \dots \lor L_{jm_j})
+$$
 
-Vamos a demostrar que $G$ tiene un clique de tamaño $K$ ssi $G^{C}$ tiene un conjunto independiente de tamaño $K$.
+la j-ésima cláusula en $F$, donde $L_{jk}$ denota  el k-ésimo literal en $C_j$ y $m_j \geq 1$. Los vértices de $G$ tendrán la siguiente forma:
 
-Por definición, $e$ es una arista de $G$  ssi no es una arista de $G^{C}$. Si tenemos un clique de tamaño $K$ en $G$ , tenemos $K$ vértices con todas las aristas posibles entre todos ellos. Por tanto, ninguna de estas aristas estaría presente en $G^{C}$, de esta forma estos $K$ vértices representan un conjunto independiente en $G^{C}$. De forma similar si tenemos un conjunto independiente en $G^{C}$ obtenemos el clique correspondiente en $G$.
+$$
+V=\set{\langle L_{ji}, j\rangle | L_{ji} \in C_j, 1 \leq j \leq l, 1 \leq i \leq m_j }
+$$
 
-De esta forma construimos la instancia $\tau(G) = G^{C}$ de **Clique** tal que $G$ tiene un conjunto independiente de tamaño al menos $K$ ssi  $G^{C}$ tiene un clique de tamaño al menos $K$.
+Estos vértices estarán conectados por aristas de manera que los vértices pertenecientes a la misma cláusula no estarán conectados y ninguna variable booleana estará conectada con su complemento. De manera más formal:
 
----
+$$
+     E = \{ (u, v) | u, v \in V, u = (L_{ji}, j), v = (L_{k\ell}, k), j \neq k, L_{ji}  \text{ y } L_{k\ell}  \text{ no son complementarios}\}
+$$
+
+Sea $M$ una máquina de Turing capaz de resolver **Clique maximal**.
+
+Si $F$ fuera satisfacible habría al menos un literal en cada cláusula que tomaría valor de verdad 1. Si tomamos un literal de estos de cada cláusula, por cosntrucción de $E$, podemos apreciar que estos forman un clique de tamaño $l$ en $G$ (porque son $l$ cláusulas), puesto que si algún par de los literales que escogimos fueran complementarios ambos no tendrían valor de verdad 1. Ninguno de los cliques formados por esta vía puede tener un tamaño mayor que $l$ ya que un vértice puede estar conectado con literales de a lo sumo $l-1$ cláusulas distintas y además los literales que pertenecen a la misma cláusula no están conectados entre sí. Por tanto ese clique es maximal.
+
+Si $F$ no fuera satisfacible entonces para cualquier dispoción de los valores de verdad de las variables boolenas siempre habría al menos una cláusula que nunca tomaría valor de verdad 1. Entonces por construcción de $G$ el clique de mayor tamaño no tendría $l$ vértices.
+
+Luego para resolver SAT nos bastaría con hacer un llamado a $M$ con el grafo $G$ y luego contar la cantidad de vértices que tiene el clique $C$ que nos devolvió $M$ (este chequeo se hace en tiempo polinomial), si $|V(C)|=l$ entonces $F$ es satisfacible, si $|V(C)| \neq l$ entonces $F$ no es satisfacible.
+
+
+
 
 
 
