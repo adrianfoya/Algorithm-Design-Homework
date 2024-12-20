@@ -1,7 +1,7 @@
 ### Exact Cover
 >Dado un conjunto $X$ y una colección S de subconjuntos de $X$, el problema consiste en determinar si existe un subcolector $S' \subseteq S$ tal que cada elemento de $X$ aparezca exactamente una vez en los subconjuntos de $S'$.
 
-Primero demostremos que es NP. Supongamos que tenemos una solución candidata $S' \subseteq S$. Queremos verificar si esta solución cumple con las condiciones del problema en tiempo polinomial. Si la suma de las cardinalidades de los subconjuntos es mayor que $|X|$ entonces no es solución del problema puesto que habría al menos un elemento que se repite en los subconjuntos, y si la cardinalidad de los subconjuntos fuera menor que $|X|$ entonces hay al menos un elemento de $X$ que no está en ningún subconjunto, esta comprobación se logra en $O(|W|)$ (que es polinomial) donde $W = \sum_{S_i \in S'} |S_i|$. Ahora quedaría verificar que cada elemento aparece exactamente una vez. Para esto recorremos $X$ verificando que cada elemento aparece en algún subconjunto de $S$, esto se logra en $O(|U| \cdot |X|)$ (que también es polinomial) donde $U = \bigcup_{S_i \in S'} S_i$.
+Primero demostremos que es NP. Supongamos que tenemos una solución candidata $S' \subseteq S$. Iteramos por todos los elementos de $X$ y por cada elemento iteramos por todos los sunconjuntos de $S'$ chequeando si el elemento está en alguno. Esto tiene complejidad en $O(|U| \cdot |X|)$ donde $U = \bigcup_{S_i \in S'} S_i$.
 
 Para demostrar que **Exact Cover** es NP-Completo vamos a reducir **SAT** a este
 > SAT $\leq_p$ Exact Cover
@@ -54,9 +54,11 @@ También, por cada cláusula $C_j$ agragamos un subconjunto $\set{C_j, p_{jk}}$ 
 
 Como, en otras palabras, lo que hacen los subconjuntos $T_{i,T}$ y $T_{i,F}$ es cubrir aquellos literales cuyo valor de verdad es 0 y los subconjuntos de la forma $\set{C_j, p_{jk}}$ lo que hacen es cubrir un literal de cada cláusula cuyo valor de verdad es 1 pueden faltar aún algunos $p_{jk}$ cuyo valor de verdad es 1 por agregar. Por tanto una vez que ya cubrimos todos los $x_i$ y todos los $C_j$ añadimos a $S'$ los conjuntos $\set{p_{jk}}$ según los $p_{jk}$ que nos falten por cubrir.
 
-Por otro lado si $S$ es un cubrimiento exacto de $\tau(F)$ definimos una asignación que satisface $F$ de la siguiente forma.
+Por otro lado si $S'$ es un cubrimiento exacto de $\tau(F)$ definimos una asignación que satisface $F$ de la siguiente forma.
 
-Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo contrario si $T_{i,F}$ esté en $S'$ establecemos $v(x_i) = F$.
+Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo contrario si $T_{i,F}$ esté en $S'$ establecemos $v(x_i) = F$ (para cada i $T_{i,T}$ y $T_{i,F}$ no pueden estar ambos en $S'$ ya que ambos subconjuntos contienen a $x_i$ y entonces no sería un cubrimiento exacto).
+
+Por tanto **Exact Cover** es un problema NP-Completo
 
 
 
@@ -100,6 +102,8 @@ Si $F$ no fuera satisfacible entonces para cualquier dispoción de los valores d
 
 Luego para resolver SAT nos bastaría con hacer un llamado a $M$ con el grafo $G$ y luego contar la cantidad de vértices que tiene el clique $C$ que nos devolvió $M$ (este chequeo se hace en tiempo polinomial), si $|V(C)|=l$ entonces $F$ es satisfacible, si $|V(C)| \neq l$ entonces $F$ no es satisfacible.
 
+Por tanto **Clique** es un problema NP-Hard.
+
 ---
 ### Cobertura de Clique
 
@@ -124,7 +128,46 @@ Para construir el grafo $G=(V,E)$ vamos a definir los vértices $v_i$ y $\overli
 
 ![graph G](./Images/chromatic_number-1.png)
 
-Como se puede apreciar para cualquier 3-coloreo de este grafo los $v_i$
+Como se puede apreciar para cualquier 3-coloreo de este grafo para cada $i$ uno entre $v_i$ y $\overline{v_i}$ tendrá color True y el otro color False. De esta manera cualquier 3-coloreo está asignando implícitamente valores de verdad a las variables del problema **3-SAT**. Ahora nos queda modificar $G$ para que de esta manera una asignación satisfacible en el problema **3-SAT** implique un 3-coloreo en $G$. Para esto vamos a anexar ciertos subgrafos a nuestro grafo $G$, vamos a llamar a estos subgrafos *gadgets*.
+
+Para cada cláusula $C_i = (a \lor b \lor c)$ tenemos que expresar el OR de sus literales utilizando los colores True, Base y False. Para esto construimos el OR-gadget de esta forma:
+
+![OR-gadget](./Images/chromatic_number-2.png)
+
+El objetivo de este subgrafo es de alguna manera expresar el OR lógico de las cláusulas. Nótese que si todos los vértices que representan los literales $a$, $b$ y $c$ tienen color False entonces para cualquier 3-coloreo de los restantes vértices del subgrafo el vértice del output obligatoriamente tiene que ser color False y si alguno de los literales tiene color True entonces hay un 3-coloreo para el cual el vértice del output tiene color True.
+
+Una vez que construimos nuestro OR-gadget para cada una de las $l$ cláusulas de $S$ lo conectamos a los vértices $B$ y $F$ de la siguiente manera:
+
+![OR-gadget connected to G](./Images/chromatic_number-3.png)
+
+Ahora nos queda demostrar que nuestra instancia inicial de 3-SAT es satsifacible ssi $G$ es 3-coloreable.
+
+Supongamos que $S$ es satisfacible y sea $v$ una asignación satisfacible de $S$. Si $v(x_i)= 1$  coloreamos $v_i$ de color True y $\bar{v_i}$ de color False (ambos estań conectados a $B$ así que es un coloreo válido). Como $S$ es satisfacible, cada cláusula $C_i = (a \lor b \lor c)$ tiene que que tener valor de verdad 1, así que al menos uno entre $a$, $b$ y $c$ tiene que tener valor de verdad 1. Por construcción del subgrafo OR-gadget sabemos que si alguno que entre $a$, $b$ y $c$ tiene valor de verdad 1 entonces el vértice del output tiene color True. Como este vértice es adyacente a $B$ y a $F$ entonces es un 3-coloreo válido.
+
+Por otro lado, supongamos que $G$ es 3-coloreable. Constuiremos una asignación de valores de verdad para las variables del problema 3-SAT estableciendo $v(x_i)=1$ si el color de $v_i$ es True y $v(x_i)=0$ si el color de $v(x_i)$ es False. Supongamos que esta asignación no satisface $S$, esto significa que existe al menos una cláusula $C_i=(a \lor b \lor c)$ cuyo valor de verdad es 0, es decir que el valor de verdad de $a$, $b$ y $c$ es 0. Pero si esto fuera así el subgrafo OR-gadget tendría color False en el vértice de output, y como este vértice es adyacente al vértice $F$ que es de color False también entonces este no sería un 3-coloreo válido, contradiciendo así la hipótesis. Por tanto si $G$ es 3-coloreable entonces S es satisfacible.
+
+De esta manera demostramos que **3-Coloreable** es NP-Hard. Vamos a reducir **3-Coloreable** a **K-Coloreable** (con $K \gt 3$ ) para demostrar que este último es NP-Hard.
+
+> **3-Coloreable** $\leq_p$ **K-Coloreable**
+
+Dado un grafo $G$ tenemos que contruir una instancia $\tau(G)= G'$ de **K-Coloreable** tal que $G$ es 3-coloreable ssi $\tau(G)$ es K-coloreable. 
+
+Para construir $G'$ lo que hacemos es añadir $K-3$ vértices a $G$ todos conectados entre todos y conectar cada uno de estos vértices a cada uno de los vértices de $G$. 
+
+Si $G$ fuera 3-coloreable necesitaríamos $K-3$ colores distintos para poder colorear los restantes vértices de $G'$. Si $G'$ fuera K-coloreable al eliminar los $K-3$ vértices que añadimos a $G$ estaríamos eliminando $K-3$ colores y por tanto el grafo resultante $G$ sería 3-coloreable.
+
+De esta manera demostramos que **K-Coloreable** es NP-Hard. Vamos a reducir **K-Coloreable** a **Número cromático** para demostrar que este último es NP-Hard.
+
+> **K-Coloreable** $\leq_p$ **Número cromático**
+
+Sea $M$ una caja negra capaz de resolver en tiempo polinomial **Número cromático**. Si le pasamos a $M$ una instancia $G$ de **K-coloreable** esta nos devolverá $\chi(G)$. Si $k \geq \chi(G)$ entonces $G$ es k-coloreable, si $k \lt \chi(G)$ entonces $G$ no es k-coloreable.
+
+Por tanto **Número cromático** es NP-Hard.
+
+
+
+
+
 
 
 
