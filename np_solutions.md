@@ -28,7 +28,7 @@ $$
      E = \{ (u, v) | u, v \in V, u = (L_{ji}, j), v = (L_{k\ell}, k), j \neq k, L_{ji}  \text{ y } L_{k\ell}  \text{ no son complementarios}\}
 $$
 
-Sea $M$ una caja negra capaz de resolver **Clique maximal** en tiempo polinomial.
+Sea $M$ una caja negra capaz de resolver **Clique maximal** .
 
 Si $F$ fuera satisfacible habría al menos un literal en cada cláusula que tomaría valor de verdad 1. Si tomamos un literal de estos de cada cláusula, por cosntrucción de $E$, podemos apreciar que estos forman un clique de tamaño $l$ en $G$ (porque son $l$ cláusulas), puesto que si algún par de los literales que escogimos fueran complementarios ambos no tendrían valor de verdad 1. Ninguno de los cliques formados por esta vía puede tener un tamaño mayor que $l$ ya que un vértice puede estar conectado con literales de a lo sumo $l-1$ cláusulas distintas y además los literales que pertenecen a la misma cláusula no están conectados entre sí. Por tanto ese clique es maximal.
 
@@ -43,7 +43,7 @@ Por tanto **Clique** es un problema NP-Hard.
 ### Número Cromático
 
 >El número cromático de un grafo es el número mínimo de colores necesarios para colorear los vértices del grafo de manera que dos vértices adyacentes no compartan el mismo color.
-
+>
 >Hallar el número cromático en un grafo.
 
 Primero vamos a reducir **3-SAT** a **3-Coloreable** para demostrar que este último es NP-Hard.
@@ -88,7 +88,7 @@ De esta manera demostramos que **K-Coloreable** es NP-Hard. Vamos a reducir **K-
 
 > **K-Coloreable** $\leq_p$ **Número cromático**
 
-Sea $M$ una caja negra capaz de resolver en tiempo polinomial **Número cromático**. Si le pasamos a $M$ una instancia $G$ de **K-coloreable** esta nos devolverá $\chi(G)$. Si $k \geq \chi(G)$ entonces $G$ es k-coloreable, si $k \lt \chi(G)$ entonces $G$ no es k-coloreable.
+Sea $M$ una caja negra capaz de resolver **Número cromático**. Si le pasamos a $M$ una instancia $G$ de **K-coloreable** esta nos devolverá $\chi(G)$. Si $k \geq \chi(G)$ entonces $G$ es k-coloreable, si $k \lt \chi(G)$ entonces $G$ no es k-coloreable.
 
 Por tanto **Número cromático** es NP-Hard.
 
@@ -96,7 +96,7 @@ Por tanto **Número cromático** es NP-Hard.
 ### Cobertura de Clique
 
 >Dado un grafo $G=(V,E)$, una cobertura de cliques es un conjunto de cliques $\{C_1,C_2,…,C_k\}$ tal que cada arista $(u,v) \in E$ pertenece a al menos uno de estos cliques.
-
+>
 >El objetivo del problema de cobertura de cliques es encontrar el número mínimo de cliques necesarios para cubrir todas las aristas del grafo.
 
 Primero vamos a demostrar esto:
@@ -133,7 +133,7 @@ Ahora vamos a reducir **Cobertura de Clique (decisión)** a **Cobertura de Cliqu
 
 > **Cobertura de Clique (decisión)** $\leq_p$ **Cobertura de Clique (optimización)**
 
-Sea $M$ una caja negra capaz de resolver **Cobertura de Clique (optimización)** en tiempo polinomial. Sea $(G,k)$ una instancia de **Cobertura de Clique (decisión)**. Si le pasamos $(G,k)$ como entrada a $M$ esta nos devolverá la cantidad mínima de cliques para realizar una cobertura de cliques en $G$. Sea $l$ el output que nos dio $M$. Si $l \leq k$ entonces es posible realizar una cobertura de clique de a lo sumo $k$ cliques, si $l \gt k$ entonces no es posible.
+Sea $M$ una caja negra capaz de resolver **Cobertura de Clique (optimización)** . Sea $(G,k)$ una instancia de **Cobertura de Clique (decisión)**. Si le pasamos $(G,k)$ como entrada a $M$ esta nos devolverá la cantidad mínima de cliques para realizar una cobertura de cliques en $G$. Sea $l$ el output que nos dio $M$. Si $l \leq k$ entonces es posible realizar una cobertura de clique de a lo sumo $k$ cliques, si $l \gt k$ entonces no es posible.
 
 Por tanto **Cobertura de Clique (optimización)** es NP-Hard.
 
@@ -201,6 +201,38 @@ Por cada $x_i$, si $T_{i,T}$ está en $S'$ establecemos $v(x_i) = T$, de lo cont
 
 Por tanto **Exact Cover** es un problema NP-Completo
 
+---
+
+### Conjunto Dominante
+
+>En un grafo $G=(V,E)$, un conjunto de vértices $D \subseteq V$ es un conjunto dominante si cada vértice de $V$ que no está en $D$ es adyacente a al menos un vértice en $D$.
+>
+>Una partición de los vértices $V$ en $k$ conjuntos $D_1,D_2,…,D_k$​ es una partición domática si cada $D_i$​ (para $i=1,2,…,k$) es un conjunto dominante. El numero dominante es la cardinalidad del menor conjunto dominante de $G$.
+>
+>Hallar el numero dominante de $G$.
+
+Primero vamos a demostrar que **Conjunto Dominante (descisión)** es NP-Hard. Este problema consiste en determinar si existe un conjunto dominante de tamaño a lo sumo $k$. Para esto vamos a reducir **Vertex Cover** a este.
+
+> **Vertex Cover** $\leq_p$ **Conjunto Dominante (decisión)**
+
+Dado un grafo $G$ y un entero $k$ tenemos que construir una instancia $\tau(G, k)=(H,l)$ de **Conjunto Dominante (descisión)** tal que $G$ tiene un cubrimiento de vértices de a lo sumo $k$ vértices ssi $\tau(G, k)$ tiene un conjunto dominante de a lo sumo $l$ vértices.
+
+Para construir nuestro grafo $H$ vamos a tomar el grafo $G$, eliminar todos los vértices que no tienen aristas incidentes y por cada arista $(u,v)$ añadiremos un vértice $x$ adyacente a $u$ y a $v$. Además tomaremos $l=k$
+
+Supongamos que $G$ tiene un cubrimiento de vértices $C$ de tamaño a lo sumo $k$. Vamos a demostrar que un cubrimiento de vértices en $G$ es un conjunto dominante en $H$. Para esto tenemos que demostrar que todo vértice $v$ en $H$ tal que $v \notin C$ tiene un vértice adyacente $u$ tal que $u \in C$. Como $H$ no tiene vértices sin aristas incidentes entonces $v$ tiene algún vértice adyacente $u$. Como $C$ es un cubrimiento de vértices debe contener a al menos uno entre $u$ y $v$. Como $v \notin C$ entonces obligatoriamente $u \in C$. Por tanto $v$ tiene un vértice adyacente $u$ tal que $u \in C$ y por tanto $C$ es un conjunto dominante en $H$.
+
+Por otro lado supongamos que $D$ es un conjunto dominante en $H$ de tamaño a los sumo $k$. Si alguno de los nuevos vértices que añadimos está en $D$ podemos sustituirlo por alguno de sus dos vértices adyacentes y aún así obtener un conjunto dominante (los vértices que añadimos solo tienen 2 vértices adyacentes y estos son adyacentes entre sí). De esta forma podemos asumir que $D$ solo contiene vértices de $G$. Por cada arista $(u,v)$ de $G$ al menos uno entre $u$ y $v$ estará en $D$, por tanto podemos afirmar que $D$ es un cubrimiento de vértices en $G$ de tamaño a lo sumo $k$.
+
+Por tanto **Conjunto Dominante (decisión)** es un problema NP-Hard.
+
+Vamos reducir ahora  **Conjunto Dominante (decisión)** 
+a **Conjunto Dominante (optimización)** para demostrar que este último es NP-Hard.
+
+> **Conjunto Dominante (decisión)** $\leq_p$ **Conjunto Dominante (optimización)**
+
+Sea $M$ una caja negra capaz de resolver **Conjunto Dominante (optimización)** . Si le pasamos como entrada el grafo $G$ de una instancia de **Conjunto Dominante (decisión)** a $M$ este nos devolverá $\gamma(G)$ que es la cardinalidad del conjunto dominante de menor tamaño de $G$. Luego para resolver **Conjunto Dominante (decisión)** solo nos bastaría con comprobar si $k \geq \gamma(G)$, si es así entonces la respuesta es **sí**, si $k \lt \gamma(G)$ la respuesta es **no**.
+
+Por tanto **Conjunto Dominante (optimización)** es NP-Hard.
 
 
 
